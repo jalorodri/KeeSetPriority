@@ -16,4 +16,4 @@ To use:
 
 The most common use case would be to set opening and saving to "below normal", and inactive left at "default". That way, KeePass operates completely normal when not doing cryptographic operations, and only lowers its priority level when doing heavy computations.
 
-DISCLAIMER: This plugin is licensed under the terms and conditions of the MIT license. As such, it is released "as is" and the author claims no responsibility for any damage or injuries. You, the user, are responsible for managing and securing your data correctly.
+DISCLAIMER: This plugin is licensed under the terms and conditions of the GPLv3 license. As such, it is released "as is" and the author claims no responsibility for any damage or injuries. You, the user, are responsible for managing and securing your data correctly.
