@@ -4,6 +4,7 @@ cd ..
 mkdir .KeeSetPriority_temp
 mkdir .KeeSetPriority_temp\Properties
 copy KeeSetPriority\*.cs .KeeSetPriority_temp
+copy KeeSetPriority\*.resx .KeeSetPriority_temp
 copy KeeSetPriority\Properties\* .KeeSetPriority_temp\Properties
 copy KeeSetPriority\KeeSetPriority.csproj .KeeSetPriority_temp
 
