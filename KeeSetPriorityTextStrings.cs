@@ -64,6 +64,7 @@ namespace KeeSetPriority
             str += "\n\nAre you sure you want to continue?";
             return str;
         }
+        public static string RealtimePriorityAdvancedSettingsString = "You are about to turn on Realtime priority. This could cause the entire computer to stop responsing and lose your data.\nAre you sure you want to continue?";
 
         public const string RealtimeTooltipStr = "Realtime priority not available; KeePass needs administrator privileges to enable realtime priority";
 
@@ -71,5 +72,14 @@ namespace KeeSetPriority
         public const string ErrorPriorityBoostRWStr = "Error reading and writing priority boost state from process. This may indicate problems with the application or the OS.\n\nFull exception:\n";
 
         public const string AdvancedSettingsBoxStr = "You are about to turn advanced settings on.\n\nKeep in mind these settings can cause undesired side effects and may cause data loss or corruption.\n\nAre you sure you want to continue?";
+
+        #region Configuration strings, do not change
+        public const string changePriorityOnOpenString = "KeeSetPriority.changePriorityOnOpen";
+        public const string changePriorityOnSaveString = "KeeSetPriority.changePriorityOnSave";
+        public const string changePriorityOnInactiveString = "KeeSetPriority.changePriorityOnInactive";
+        public const string changePriorityBoostString = "KeeSetPriority.changePriorityOnInactive";
+        public const string isAdvancedOptionsAvailableString = "KeeSetPriority.isAdvancedOptionsAvailable";
+        public const string allowDangerousPrioritiesString = "KeeSetPriority.allowDangerousPriorities";
+        #endregion
     }
 }
