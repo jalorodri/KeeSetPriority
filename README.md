@@ -11,8 +11,8 @@ To install:
 
 To use:
 * Go to the Tools button in the upper toolbar in KeePass
-* Click on KeeSetPriority and select for which action you want to change priority (inactive, opening a database, or saving a database)
-* Click on the desired priority level.
+* Click on KeeSetPriority
+* For the desired action(save, open, or while inactive), select the priority level desired. By default, it allows you to select from Idle to Above Normal
 
 The most common use case would be to set opening and saving to "below normal", and inactive left at "default". That way, KeePass operates completely normal when not doing cryptographic operations, and only lowers its priority level when doing heavy computations.
 
