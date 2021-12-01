@@ -20,14 +20,14 @@ namespace KeeSetPriority
             get { return "https://raw.githubusercontent.com/jalorodri/KeeSetPriority/master/version.info"; }
         }
 
-        KeeSetPriorityData dataStruct;
+        KeeSetPriorityData mainDataStruct;
 
         public override bool Initialize(IPluginHost host)
         {
             if (host == null)
                 return false;
 
-            dataStruct = new KeeSetPriorityData(host);
+            mainDataStruct = new KeeSetPriorityData(host);
 
             #region Load and test saved data for correctness
             // If a variable is not numeric, it may be badly corrupted; rewrite all the variables just in case
@@ -35,11 +35,11 @@ namespace KeeSetPriority
             {
                 // ReadAndValidateSettings() will throw an exception if variables are unable to be parsed
                 // or in case the data is not valid (corrupted and/or user-modified)
-                dataStruct.ReadAndValidateSettings();
+                mainDataStruct.ReadAndValidateSettings();
             }
             catch (Exception ex)
             {
-                if (!dataStruct.OnIncongruentSettings(ex))
+                if (!mainDataStruct.OnIncongruentSettings(ex))
                 {
                     // OnIncongruentSettings(ex) returns false when the user selects not to continue
                     return false;
@@ -47,32 +47,32 @@ namespace KeeSetPriority
             }
             #endregion
 
-            dataStruct.m_host.MainWindow.FileSavingPre += OnFileSavePre;
-            dataStruct.m_host.MainWindow.FileSaved += OnFileSavePost;
+            mainDataStruct.m_host.MainWindow.FileSavingPre += OnFileSavePre;
+            mainDataStruct.m_host.MainWindow.FileSaved += OnFileSavePost;
             // Apparently there isn't an event for just before opening a database, so detecting when KeePass accesses the database file suffices
             IOConnection.IOAccessPre += OnFileOpenPre;
-            dataStruct.m_host.MainWindow.FileOpened += OnFileOpenPost;
+            mainDataStruct.m_host.MainWindow.FileOpened += OnFileOpenPost;
 
             // Sets the current priority class on the value that was saved on changePriorityOnInactive but only if that value isn't default
-            if (dataStruct.changePriorityOnInactive != 0)
+            if (mainDataStruct.priorityModeOnInactive == PriorityChangeTypes.AlwaysSet)
             {
-                dataStruct.currentProcess.PriorityClass = (ProcessPriorityClass)dataStruct.changePriorityOnInactive;
-                dataStruct.currentProcess.Refresh();
-                if (dataStruct.currentProcess.PriorityClass != (ProcessPriorityClass)dataStruct.changePriorityOnInactive)
+                mainDataStruct.currentProcess.PriorityClass = (ProcessPriorityClass)mainDataStruct.priorityLevelOnInactive;
+                mainDataStruct.currentProcess.Refresh();
+                if (mainDataStruct.currentProcess.PriorityClass != (ProcessPriorityClass)mainDataStruct.priorityLevelOnInactive)
                 {
                     // Windows doesn't let unelevated processes set their priority to Realtime, and will defer them to High
-                    MessageBox.Show("Error setting the process priority to " + dataStruct.changePriorityOnInactive.ToString() + 
-                        "\n\nSetting priority to " + dataStruct.currentProcess.PriorityClass.ToString(), KeeSetPriorityTextStrings.ErrorBoxTitleStr, 
-                        MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    MessageBox.Show("Error setting the process priority to " + mainDataStruct.priorityLevelOnInactive.ToString() + 
+                        "\n\nSetting priority to " + mainDataStruct.currentProcess.PriorityClass.ToString() + "\n\nSaved settings are not changed", 
+                        KeeSetPriorityTextStrings.ErrorBoxTitleStr, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 }
             }
-            
             return true;
         }
 
         public override void Terminate()
         {
-            dataStruct.WriteSettings();
+            mainDataStruct.WriteSettings();
+            mainDataStruct.currentProcess.Dispose();
         }
 
         public override ToolStripMenuItem GetMenuItem(PluginMenuType t)
@@ -86,11 +86,11 @@ namespace KeeSetPriority
             ToolStripMenuItem MainButtonToolsPanel = new ToolStripMenuItem(KeeSetPriorityTextStrings.FormalNameStr);
             MainButtonToolsPanel.Click += delegate (object sender, EventArgs e)
             {
-                using (SettingsWindow settingsWindow = new SettingsWindow(dataStruct))
+                using (SettingsWindow settingsWindow = new SettingsWindow(mainDataStruct))
                 {
                     if (settingsWindow.ShowDialog() == DialogResult.OK)
                     {
-                        dataStruct = settingsWindow.dataStruct;
+                        mainDataStruct = settingsWindow.configDataStruct;
                     }
                 }
             };
@@ -100,27 +100,31 @@ namespace KeeSetPriority
         #region Open and save functions
         private void OnFileSavePre(object sender, FileSavingEventArgs e)
         {
-            if (dataStruct.changePriorityOnSave == 0)
+            if (mainDataStruct.priorityModeOnSave == PriorityChangeTypes.NeverSet)
             {
                 // Safely sets it back to inactive priority
                 OnFileSavePost();
             }
-            else
+            else if (mainDataStruct.priorityModeOnSave == PriorityChangeTypes.AlwaysSet)
             {
-                dataStruct.currentProcess.PriorityClass = (ProcessPriorityClass)dataStruct.changePriorityOnSave;
+                mainDataStruct.currentProcess.PriorityClass = (ProcessPriorityClass)mainDataStruct.priorityLevelOnSave;
+            }
+            else if (mainDataStruct.priorityModeOnSave == PriorityChangeTypes.SetWhenDependent)
+            {
+
             }
         }
 
         private void OnFileSavePost(object sender = null, FileSavedEventArgs e = null)
         {
-            if (dataStruct.changePriorityOnInactive == 0)
+            if (mainDataStruct.priorityModeOnInactive == PriorityChangeTypes.NeverSet)
             {
                 // defaultProcessPriority is guaranteed to be part of ProcessPriorityClass
-                dataStruct.currentProcess.PriorityClass = dataStruct.defaultProcessPriority;
+                mainDataStruct.currentProcess.PriorityClass = mainDataStruct.defaultProcessPriority;
             }
-            else
+            else if (mainDataStruct.priorityModeOnInactive == PriorityChangeTypes.AlwaysSet)
             {
-                dataStruct.currentProcess.PriorityClass = (ProcessPriorityClass)dataStruct.changePriorityOnInactive;
+                mainDataStruct.currentProcess.PriorityClass = (ProcessPriorityClass)mainDataStruct.priorityLevelOnInactive;
             }
         }
 
@@ -128,27 +132,27 @@ namespace KeeSetPriority
         {
             if (e.Type == IOAccessType.Read && e.IOConnectionInfo.Path.EndsWith("." + AppDefs.FileExtension.FileExt))
             {
-                if (dataStruct.changePriorityOnOpen == 0)
+                if (mainDataStruct.priorityModeOnOpen == PriorityChangeTypes.NeverSet)
                 {
                     // Safely sets to inactive priority
                     OnFileOpenPost();
                 }
-                else
+                else if (mainDataStruct.priorityModeOnOpen == PriorityChangeTypes.AlwaysSet)
                 {
-                    dataStruct.currentProcess.PriorityClass = (ProcessPriorityClass)dataStruct.changePriorityOnOpen;
+                    mainDataStruct.currentProcess.PriorityClass = (ProcessPriorityClass)mainDataStruct.priorityLevelOnOpen;
                 }
             }
         }
 
         private void OnFileOpenPost(object sender = null, FileOpenedEventArgs e = null)
         {
-            if (dataStruct.changePriorityOnInactive == 0)
+            if (mainDataStruct.priorityModeOnInactive == PriorityChangeTypes.NeverSet)
             {
-                dataStruct.currentProcess.PriorityClass = dataStruct.defaultProcessPriority;
+                mainDataStruct.currentProcess.PriorityClass = mainDataStruct.defaultProcessPriority;
             }
-            else
+            else if (mainDataStruct.priorityModeOnInactive == PriorityChangeTypes.AlwaysSet)
             {
-                dataStruct.currentProcess.PriorityClass = (ProcessPriorityClass)dataStruct.changePriorityOnInactive;
+                mainDataStruct.currentProcess.PriorityClass = (ProcessPriorityClass)mainDataStruct.priorityLevelOnInactive;
             }
         }
         #endregion
