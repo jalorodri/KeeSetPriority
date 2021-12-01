@@ -8,8 +8,6 @@ namespace KeeSetPriority
         {
             switch (prio)
             {
-                case ProcessPriorityClassKSP.Default:
-                    return DefaultLevelStr;
                 case ProcessPriorityClassKSP.RealTime:
                     return RealtimeStr;
                 case ProcessPriorityClassKSP.High:
@@ -27,7 +25,6 @@ namespace KeeSetPriority
             }
         }
 
-        private const string DefaultLevelStr = "Default";
         private const string RealtimeStr = "Realtime";
         private const string HighStr = "High";
         private const string AboveNormalStr = "Above normal";
@@ -74,9 +71,9 @@ namespace KeeSetPriority
         public const string AdvancedSettingsBoxStr = "You are about to turn advanced settings on.\n\nKeep in mind these settings can cause undesired side effects and may cause data loss or corruption.\n\nAre you sure you want to continue?";
 
         #region Configuration strings, do not change
-        public const string changePriorityOnOpenString = "KeeSetPriority.changePriorityOnOpen";
-        public const string changePriorityOnSaveString = "KeeSetPriority.changePriorityOnSave";
-        public const string changePriorityOnInactiveString = "KeeSetPriority.changePriorityOnInactive";
+        public const string changePriorityOnOpenString = "KeeSetPriority.priorityLevelOnOpen";
+        public const string changePriorityOnSaveString = "KeeSetPriority.priorityLevelOnSave";
+        public const string changePriorityOnInactiveString = "KeeSetPriority.priorityLevelOnInactive";
         public const string changePriorityBoostString = "KeeSetPriority.changePriorityOnInactive";
         public const string isAdvancedOptionsAvailableString = "KeeSetPriority.isAdvancedOptionsAvailable";
         public const string allowDangerousPrioritiesString = "KeeSetPriority.allowDangerousPriorities";
