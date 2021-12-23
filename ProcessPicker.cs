@@ -1,54 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace KeeSetPriority
 {
     public partial class ProcessPicker : UserControl
     {
-        private static List<String> availableProcessesStr;
-        private List<String> selectedProcessesStr; 
-        private String[] dataStructSelectedProcesses;
 
-        private static Mutex isGetAvailableProcessesMutex = new Mutex();
+        private static List<String> availableProcessesStr;
+        private List<String> selectedProcessesStr;
+
+        // It is marked as true if the getAvailableProcesses process is done
         private static bool isGetAvailableProcessesDone = false;
 
+#pragma warning disable IDE0044
         private static List<ProcessPicker> processPickerList;
+#pragma warning restore IDE0044
+        private static KeeSetPriorityData processPickerDataClass;
+        private readonly ActionTypesKSP actionType;
 
-        private static KeeSetPriorityData dataStruct;
+        private static readonly string[] systemProcesses = {
+            "KeePass",
+            "services",
+            "Idle",
+            "wininit",
+            "winlogon",
+            "csrss",
+            "lsass",
+            "dwm",
+            "Memory Compression",
+            "Registry",
+            "RuntimeBroker",
+            "smss",
+            "System",
+            "svchost",
+            "sihost",
+            // These ones don't make sense, since they could be pretty much anything
+            "dllhost",
+            "rundll32",
+        };
 
-        public ProcessPicker(ActionTypesKSP action)
+        private static readonly string[] windowedSystemProcesses = {
+            "ApplicationFrameHost",
+            "TextInputHost"
+        };
+
+        internal ProcessPicker(ActionTypesKSP action)
         {
+            if (processPickerDataClass == null)
+                throw new ArgumentNullException("processPickerDataClass is not defined, need to call ProcessPicker.SetDataStruct first");
+
+            actionType = action;
+
             InitializeComponent();
             processPickerList.Add(this);
             availableProcessesBox.Items.Add("Loading...");
-            getAvailableProcessesBackgroundWorker.RunWorkerAsync();
+            UpdateAvailableProcessesBoxes();
+
             selectedProcessesStr = new List<string>();
-            switch (action)
+            if (!(processPickerDataClass.configDataStruct.GetDependantPrograms(actionType, true) == null || processPickerDataClass.configDataStruct.GetDependantPrograms(actionType, true).GetLength(0) == 0))
             {
-                case ActionTypesKSP.Open:
-                    dataStructSelectedProcesses = dataStruct.openDependentPrograms;
-                    break;
-                case ActionTypesKSP.Save:
-                    dataStructSelectedProcesses = dataStruct.saveDependentPrograms;
-                    break;
-                case ActionTypesKSP.Inactive:
-                    dataStructSelectedProcesses = dataStruct.inactiveDependentPrograms;
-                    break;
-            }
-            if(dataStructSelectedProcesses != null)
-            {
-                selectedProcessesStr.AddRange(dataStructSelectedProcesses);
+                selectedProcessesStr.AddRange(processPickerDataClass.configDataStruct.GetDependantPrograms(actionType, true));
                 selectedProcessesStr.Sort();
-                selectedProcessesBox.Items.Add(selectedProcessesStr.ToArray());
+                selectedProcessesBox.Items.AddRange(selectedProcessesStr.ToArray());
             }
         }
 
@@ -62,61 +80,82 @@ namespace KeeSetPriority
             processPickerList = new List<ProcessPicker>();
         }
 
-        public static void SetDataStruct(ref KeeSetPriorityData dataStruct)
+        internal static void SetDataStruct(ref KeeSetPriorityData dataClass)
         {
-            ProcessPicker.dataStruct = dataStruct;
+            // By assignment, it is the same class, so changes dont by ProcessPicker will be visible to ConfigWindow
+            processPickerDataClass = dataClass;
         }
 
-        public static void GetAvailableProcesses(bool windowedProcesses = false)
+        private void UpdateAvailableProcessesBoxes()
         {
-            isGetAvailableProcessesMutex.WaitOne();
+            this.availableProcessesBox.Items.Clear();
+            this.availableProcessesBox.Items.Add("Loading...");
+            GetAvailableProcesses();
+            this.availableProcessesBox.Items.Clear();
+            this.availableProcessesBox.Items.AddRange(availableProcessesStr.ToArray());
+        }
+
+        private static void GetAvailableProcesses()
+        {
             if (!isGetAvailableProcessesDone)
             {
-                Process[] processList = Process.GetProcesses(); 
-                availableProcessesStr = new List<string>(processList.Length);
+                Process[] runningProcessesList = Process.GetProcesses();
+                availableProcessesStr = new List<string>(runningProcessesList.Length);
                 int j = 1;
-                foreach (Process process in processList)
+                foreach (Process process in runningProcessesList)
                 {
-                    // VERY SLOW, must optimize
-                    // For now, it just runs asynchronously
-                    try
+                    if (process.MainWindowTitle == "")
                     {
-                        availableProcessesStr.Add(process.MainModule.FileName.Substring(process.MainModule.FileName.LastIndexOf('\\') + 1));
-                        // j won't be incremented if it throws an exception
-                        j++;
+                        if (processPickerDataClass.configDataStruct.allowNonWindowedProcesses == AllowBackgroundSystemProcesses.BackgroundAndSystem)
+                        {
+                            availableProcessesStr.Add(process.ProcessName);
+                        }
+                        else if (processPickerDataClass.configDataStruct.allowNonWindowedProcesses == AllowBackgroundSystemProcesses.OnlyBackground)
+                        {
+                            if (!systemProcesses.Contains(process.ProcessName))
+                            {
+                                availableProcessesStr.Add(process.ProcessName);
+                            }
+                        }
                     }
-                    catch (Win32Exception)
+                    else
                     {
-                        // Win32Exceptions mostly come due to not having SeDebugPrivilege and trying to access an OS-level process like ntoskrnl.exe or Services
-                        // Just ignore them
+                        if (!windowedSystemProcesses.Contains(process.ProcessName))
+                        {
+                            availableProcessesStr.Add(process.ProcessName + " [" + process.MainWindowTitle + ']');
+                        }
                     }
-                    catch (Exception ex)
+                    j++;
+                }
+                KeeSetPriorityData.DisposeArray(runningProcessesList);
+
+                availableProcessesStr = availableProcessesStr.Distinct().ToList();
+                // Doesn't make much sense to have this listed, it's always gonna be running when the plugin is active
+                // Remove core system processes
+                if (processPickerDataClass.configDataStruct.allowNonWindowedProcesses != AllowBackgroundSystemProcesses.BackgroundAndSystem)
+                {
+                    foreach(string systemProcess in systemProcesses)
                     {
-                        throw new Exception("Error while trying to retrieve available processes", ex);
-                    }
-                    finally
-                    {
-                        process.Dispose();
+
                     }
                 }
-                availableProcessesStr = availableProcessesStr.Distinct().ToList();
-                availableProcessesStr.Remove("KeePass.exe"); // Doesn't make much sense to have this listed, it's always gonna be running when the plugin is active
                 availableProcessesStr.Sort();
+
                 isGetAvailableProcessesDone = true;
             }
-            isGetAvailableProcessesMutex.ReleaseMutex();
         }
 
         private void AddButton_Click(object sender, EventArgs e)
         {
             foreach(int i in availableProcessesBox.SelectedIndices)
             {
-                selectedProcessesStr.Add(selectedProcessesBox.Items[i].ToString());
-                selectedProcessesStr.Sort();
-                selectedProcessesBox.Items.Clear();
-                selectedProcessesBox.Items.AddRange(selectedProcessesStr.ToArray());
-                dataStructSelectedProcesses = selectedProcessesStr.ToArray();
+                selectedProcessesStr.Add(availableProcessesBox.Items[i].ToString().Substring(0, availableProcessesBox.Items[i].ToString().IndexOf(' ') == -1 ? availableProcessesBox.Items[i].ToString().Length : availableProcessesBox.Items[i].ToString().IndexOf(' ')));
             }
+            selectedProcessesStr = selectedProcessesStr.Distinct().ToList();
+            selectedProcessesStr.Sort();
+            selectedProcessesBox.Items.Clear();
+            selectedProcessesBox.Items.AddRange(selectedProcessesStr.ToArray());
+            processPickerDataClass.configDataStruct.SetDependantPrograms(actionType, selectedProcessesStr.ToArray(), true);
         }
 
         private void RemoveButton_Click(object sender, EventArgs e)
@@ -125,33 +164,42 @@ namespace KeeSetPriority
             {
                 selectedProcessesStr.RemoveAt(i);
                 selectedProcessesBox.Items.RemoveAt(i);
-                dataStructSelectedProcesses = selectedProcessesStr.ToArray();
             }
+            processPickerDataClass.configDataStruct.SetDependantPrograms(actionType, selectedProcessesStr.ToArray(), true);
         }
 
-        private void GetAvailableProcessesBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-                GetAvailableProcesses();
-        }
 
-        private void GetAvailableProcessesBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        internal static void UpdateProcessList()
         {
-            foreach(ProcessPicker processPicker in processPickerList)
+            foreach (ProcessPicker instance in processPickerList)
             {
-                processPicker.availableProcessesBox.Items.Clear();
-                processPicker.availableProcessesBox.Items.AddRange(availableProcessesStr.ToArray());
+                instance.UpdateButton_Click(null, null);
             }
         }
 
         private void UpdateButton_Click(object sender, EventArgs e)
         {
-            foreach (ProcessPicker processPicker in processPickerList)
-            {
-                processPicker.availableProcessesBox.Items.Clear();
-                processPicker.availableProcessesBox.Items.Add("Loading...");
-            }
             isGetAvailableProcessesDone = false;
-            getAvailableProcessesBackgroundWorker.RunWorkerAsync();
+            UpdateAvailableProcessesBoxes();
+        }
+
+        private void ProcessPicker_SizeChanged(object sender, EventArgs e)
+        {
+            availableProcessesBox.Size = selectedProcessesBox.Size = new System.Drawing.Size
+            {
+                Width = (this.Width - buttonsPanel.Size.Width - buttonsPanel.Margin.Horizontal - availableProcessesBox.Margin.Horizontal - selectedProcessesBox.Margin.Horizontal) / 2,
+                Height = this.Height - 21 - availableProcessesBox.Margin.Bottom
+            };
+            selectedProcessesBox.Location = new System.Drawing.Point
+            {
+                X = this.Width - selectedProcessesBox.Size.Width - selectedProcessesBox.Margin.Right,
+                Y = 21
+            };
+            buttonsPanel.Location = new System.Drawing.Point
+            {
+                X = availableProcessesBox.Location.X + availableProcessesBox.Size.Width + availableProcessesBox.Margin.Right + buttonsPanel.Margin.Left,
+                Y = 21
+            };
         }
     }
 }

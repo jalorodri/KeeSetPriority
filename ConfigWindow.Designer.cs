@@ -1,7 +1,7 @@
 ﻿
 namespace KeeSetPriority
 {
-    partial class SettingsWindow
+    partial class ConfigWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -46,10 +46,18 @@ namespace KeeSetPriority
             this.label1 = new System.Windows.Forms.Label();
             this.dialogEnableAdvancedSettings = new System.Windows.Forms.CheckBox();
             this.advancedGroupBox = new System.Windows.Forms.GroupBox();
-            this.setPriorityBoostDropdown = new System.Windows.Forms.ComboBox();
-            this.priorityBoostStatusLabel = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.updateFrecuencyNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.allowNonWindowedProcessesCheckbox = new System.Windows.Forms.CheckBox();
+            this.allowSystemProcessesCheckBox = new System.Windows.Forms.CheckBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.setPriorityBoostButton = new System.Windows.Forms.CheckBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.priorityBoostStatusLabel = new System.Windows.Forms.Label();
+            this.setPriorityBoostDropdown = new System.Windows.Forms.ComboBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.allowHighPriorityButton = new System.Windows.Forms.CheckBox();
             this.allowRealtimePriorityButton = new System.Windows.Forms.CheckBox();
             this.settingsTooltip = new System.Windows.Forms.ToolTip(this.components);
@@ -66,7 +74,13 @@ namespace KeeSetPriority
             this.inactiveSetDependantPriorityRadioButton = new System.Windows.Forms.RadioButton();
             this.advancedTabPage = new System.Windows.Forms.TabPage();
             this.currentPriorityGroupBox = new System.Windows.Forms.GroupBox();
+            this.updateCurrentPriorityTag = new System.ComponentModel.BackgroundWorker();
             this.advancedGroupBox.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.updateFrecuencyNumericUpDown)).BeginInit();
+            this.groupBox6.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.mainTabControl.SuspendLayout();
             this.saveTabPage.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -264,12 +278,10 @@ namespace KeeSetPriority
             this.advancedGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.advancedGroupBox.Controls.Add(this.setPriorityBoostDropdown);
-            this.advancedGroupBox.Controls.Add(this.priorityBoostStatusLabel);
-            this.advancedGroupBox.Controls.Add(this.label3);
-            this.advancedGroupBox.Controls.Add(this.setPriorityBoostButton);
-            this.advancedGroupBox.Controls.Add(this.allowHighPriorityButton);
-            this.advancedGroupBox.Controls.Add(this.allowRealtimePriorityButton);
+            this.advancedGroupBox.Controls.Add(this.groupBox7);
+            this.advancedGroupBox.Controls.Add(this.groupBox6);
+            this.advancedGroupBox.Controls.Add(this.groupBox5);
+            this.advancedGroupBox.Controls.Add(this.groupBox1);
             this.advancedGroupBox.Enabled = false;
             this.advancedGroupBox.ForeColor = System.Drawing.SystemColors.ControlText;
             this.advancedGroupBox.Location = new System.Drawing.Point(6, 24);
@@ -278,6 +290,130 @@ namespace KeeSetPriority
             this.advancedGroupBox.TabIndex = 8;
             this.advancedGroupBox.TabStop = false;
             // 
+            // groupBox7
+            // 
+            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox7.Controls.Add(this.label2);
+            this.groupBox7.Controls.Add(this.updateFrecuencyNumericUpDown);
+            this.groupBox7.Location = new System.Drawing.Point(6, 260);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(548, 54);
+            this.groupBox7.TabIndex = 20;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Update thread settings";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 23);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(306, 17);
+            this.label2.TabIndex = 15;
+            this.label2.Text = "Time frequency for update thread (in seconds):";
+            // 
+            // updateFrecuencyNumericUpDown
+            // 
+            this.updateFrecuencyNumericUpDown.Location = new System.Drawing.Point(312, 21);
+            this.updateFrecuencyNumericUpDown.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.updateFrecuencyNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.updateFrecuencyNumericUpDown.Name = "updateFrecuencyNumericUpDown";
+            this.updateFrecuencyNumericUpDown.Size = new System.Drawing.Size(93, 22);
+            this.updateFrecuencyNumericUpDown.TabIndex = 16;
+            this.updateFrecuencyNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.updateFrecuencyNumericUpDown.ValueChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox6.Controls.Add(this.allowNonWindowedProcessesCheckbox);
+            this.groupBox6.Controls.Add(this.allowSystemProcessesCheckBox);
+            this.groupBox6.Location = new System.Drawing.Point(6, 174);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(548, 80);
+            this.groupBox6.TabIndex = 19;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Process list settings";
+            // 
+            // allowNonWindowedProcessesCheckbox
+            // 
+            this.allowNonWindowedProcessesCheckbox.AutoSize = true;
+            this.allowNonWindowedProcessesCheckbox.Location = new System.Drawing.Point(6, 21);
+            this.allowNonWindowedProcessesCheckbox.Name = "allowNonWindowedProcessesCheckbox";
+            this.allowNonWindowedProcessesCheckbox.Size = new System.Drawing.Size(444, 21);
+            this.allowNonWindowedProcessesCheckbox.TabIndex = 13;
+            this.allowNonWindowedProcessesCheckbox.Text = "Allow choosing non-windowed processes (background processes)";
+            this.allowNonWindowedProcessesCheckbox.UseVisualStyleBackColor = true;
+            this.allowNonWindowedProcessesCheckbox.CheckedChanged += new System.EventHandler(this.AllowNonWindowedProcessesCheckbox_CheckedChanged);
+            // 
+            // allowSystemProcessesCheckBox
+            // 
+            this.allowSystemProcessesCheckBox.AutoSize = true;
+            this.allowSystemProcessesCheckBox.Location = new System.Drawing.Point(30, 49);
+            this.allowSystemProcessesCheckBox.Name = "allowSystemProcessesCheckBox";
+            this.allowSystemProcessesCheckBox.Size = new System.Drawing.Size(240, 21);
+            this.allowSystemProcessesCheckBox.TabIndex = 14;
+            this.allowSystemProcessesCheckBox.Text = "Allow choosing system processes";
+            this.allowSystemProcessesCheckBox.UseVisualStyleBackColor = true;
+            this.allowSystemProcessesCheckBox.CheckedChanged += new System.EventHandler(this.AllowSystemProcessesCheckBox_CheckedChanged);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.setPriorityBoostButton);
+            this.groupBox5.Controls.Add(this.label3);
+            this.groupBox5.Controls.Add(this.priorityBoostStatusLabel);
+            this.groupBox5.Controls.Add(this.setPriorityBoostDropdown);
+            this.groupBox5.Location = new System.Drawing.Point(6, 93);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(548, 75);
+            this.groupBox5.TabIndex = 18;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Priority boost settings";
+            // 
+            // setPriorityBoostButton
+            // 
+            this.setPriorityBoostButton.AutoSize = true;
+            this.setPriorityBoostButton.Location = new System.Drawing.Point(6, 21);
+            this.setPriorityBoostButton.Name = "setPriorityBoostButton";
+            this.setPriorityBoostButton.Size = new System.Drawing.Size(248, 21);
+            this.setPriorityBoostButton.TabIndex = 11;
+            this.setPriorityBoostButton.Text = "Set priority boost on window focus:";
+            this.setPriorityBoostButton.UseVisualStyleBackColor = true;
+            this.setPriorityBoostButton.CheckedChanged += new System.EventHandler(this.SetPriorityBoostButton_CheckedChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(30, 46);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(187, 17);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "Current priority boost status:";
+            // 
+            // priorityBoostStatusLabel
+            // 
+            this.priorityBoostStatusLabel.AutoSize = true;
+            this.priorityBoostStatusLabel.Location = new System.Drawing.Point(218, 46);
+            this.priorityBoostStatusLabel.Name = "priorityBoostStatusLabel";
+            this.priorityBoostStatusLabel.Size = new System.Drawing.Size(56, 17);
+            this.priorityBoostStatusLabel.TabIndex = 4;
+            this.priorityBoostStatusLabel.Text = "(status)";
+            // 
             // setPriorityBoostDropdown
             // 
             this.setPriorityBoostDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -285,45 +421,29 @@ namespace KeeSetPriority
             this.setPriorityBoostDropdown.Items.AddRange(new object[] {
             "Enable",
             "Disable"});
-            this.setPriorityBoostDropdown.Location = new System.Drawing.Point(255, 66);
+            this.setPriorityBoostDropdown.Location = new System.Drawing.Point(255, 19);
             this.setPriorityBoostDropdown.Name = "setPriorityBoostDropdown";
             this.setPriorityBoostDropdown.Size = new System.Drawing.Size(121, 24);
             this.setPriorityBoostDropdown.TabIndex = 12;
             this.setPriorityBoostDropdown.SelectedIndexChanged += new System.EventHandler(this.SetPriorityBoostDropdown_SelectedIndexChanged);
             // 
-            // priorityBoostStatusLabel
+            // groupBox1
             // 
-            this.priorityBoostStatusLabel.AutoSize = true;
-            this.priorityBoostStatusLabel.Location = new System.Drawing.Point(218, 93);
-            this.priorityBoostStatusLabel.Name = "priorityBoostStatusLabel";
-            this.priorityBoostStatusLabel.Size = new System.Drawing.Size(56, 17);
-            this.priorityBoostStatusLabel.TabIndex = 4;
-            this.priorityBoostStatusLabel.Text = "(status)";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(30, 93);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(187, 17);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Current priority boost status:";
-            // 
-            // setPriorityBoostButton
-            // 
-            this.setPriorityBoostButton.AutoSize = true;
-            this.setPriorityBoostButton.Location = new System.Drawing.Point(6, 68);
-            this.setPriorityBoostButton.Name = "setPriorityBoostButton";
-            this.setPriorityBoostButton.Size = new System.Drawing.Size(252, 21);
-            this.setPriorityBoostButton.TabIndex = 11;
-            this.setPriorityBoostButton.Text = "Set priority boost on window focus: ";
-            this.setPriorityBoostButton.UseVisualStyleBackColor = true;
-            this.setPriorityBoostButton.CheckedChanged += new System.EventHandler(this.SetPriorityBoostButton_CheckedChanged);
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.allowHighPriorityButton);
+            this.groupBox1.Controls.Add(this.allowRealtimePriorityButton);
+            this.groupBox1.Location = new System.Drawing.Point(6, 9);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(548, 78);
+            this.groupBox1.TabIndex = 17;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Priority settings";
             // 
             // allowHighPriorityButton
             // 
             this.allowHighPriorityButton.AutoSize = true;
-            this.allowHighPriorityButton.Location = new System.Drawing.Point(6, 11);
+            this.allowHighPriorityButton.Location = new System.Drawing.Point(6, 21);
             this.allowHighPriorityButton.Name = "allowHighPriorityButton";
             this.allowHighPriorityButton.Size = new System.Drawing.Size(142, 21);
             this.allowHighPriorityButton.TabIndex = 9;
@@ -334,7 +454,7 @@ namespace KeeSetPriority
             // allowRealtimePriorityButton
             // 
             this.allowRealtimePriorityButton.AutoSize = true;
-            this.allowRealtimePriorityButton.Location = new System.Drawing.Point(30, 37);
+            this.allowRealtimePriorityButton.Location = new System.Drawing.Point(30, 47);
             this.allowRealtimePriorityButton.Name = "allowRealtimePriorityButton";
             this.allowRealtimePriorityButton.Size = new System.Drawing.Size(271, 21);
             this.allowRealtimePriorityButton.TabIndex = 10;
@@ -389,6 +509,7 @@ namespace KeeSetPriority
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.saveSettingsComboBox);
             this.groupBox2.Location = new System.Drawing.Point(425, 6);
             this.groupBox2.Name = "groupBox2";
@@ -425,6 +546,7 @@ namespace KeeSetPriority
             // 
             // groupBox3
             // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.openSettingsComboBox);
             this.groupBox3.Location = new System.Drawing.Point(425, 6);
             this.groupBox3.Name = "groupBox3";
@@ -462,6 +584,7 @@ namespace KeeSetPriority
             // 
             // groupBox4
             // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.inactiveSettingsComboBox);
             this.groupBox4.Location = new System.Drawing.Point(425, 6);
             this.groupBox4.Name = "groupBox4";
@@ -505,7 +628,13 @@ namespace KeeSetPriority
             this.currentPriorityGroupBox.TabStop = false;
             this.currentPriorityGroupBox.Text = "Current priority:";
             // 
-            // SettingsWindow
+            // updateCurrentPriorityTag
+            // 
+            this.updateCurrentPriorityTag.WorkerSupportsCancellation = true;
+            this.updateCurrentPriorityTag.DoWork += new System.ComponentModel.DoWorkEventHandler(this.UpdateCurrentPriorityTag_DoWork);
+            this.updateCurrentPriorityTag.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.UpdateCurrentPriorityTag_RunWorkerCompleted);
+            // 
+            // ConfigWindow
             // 
             this.AcceptButton = this.dialogButtonSave;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -518,15 +647,23 @@ namespace KeeSetPriority
             this.Controls.Add(this.dialogButtonCancel);
             this.Controls.Add(this.dialogButtonSave);
             this.Controls.Add(this.mainTabControl);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(590, 300);
-            this.Name = "SettingsWindow";
+            this.MinimumSize = new System.Drawing.Size(622, 538);
+            this.Name = "ConfigWindow";
             this.Text = "KeeSetPriority Settings";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsWindow_FormClosing);
             this.Load += new System.EventHandler(this.SettingsWindow_Load);
             this.advancedGroupBox.ResumeLayout(false);
-            this.advancedGroupBox.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.updateFrecuencyNumericUpDown)).EndInit();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.mainTabControl.ResumeLayout(false);
             this.saveTabPage.ResumeLayout(false);
             this.saveTabPage.PerformLayout();
@@ -587,5 +724,14 @@ namespace KeeSetPriority
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.CheckBox allowNonWindowedProcessesCheckbox;
+        private System.Windows.Forms.CheckBox allowSystemProcessesCheckBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown updateFrecuencyNumericUpDown;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.GroupBox groupBox5;
+        public System.ComponentModel.BackgroundWorker updateCurrentPriorityTag;
     }
 }

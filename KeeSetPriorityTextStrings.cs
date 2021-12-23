@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace KeeSetPriority
 {
-    public static class KeeSetPriorityTextStrings
+    internal static class KeeSetPriorityTextStrings
     {
         public static string GetPriorityLevelStr(ProcessPriorityClassKSP prio)
         {
@@ -43,6 +45,30 @@ namespace KeeSetPriority
         public const string DisabledStr = "Disabled";
         public const string NotAvailableStr = "Not available";
 
+        private const string OnOpenDataCorrectionWarning = "The data to set priority while the database is opening is corrupted or invalid.\n\nDo you want to reset the setting to its default value? KeeSetPriority will not be able to continue if you press 'no'.";
+        private const string OnSaveDataCorrectionWarning = "The data to set priority while the database is saving is corrupted or invalid.\n\nDo you want to reset the setting to its default value? KeeSetPriority will not be able to continue if you press 'no'.";
+        private const string OnInactiveDataCorrectionWarning = "The data to set priority while KeePass is running is corrupted or invalid.\n\nDo you want to reset the setting to its default value? KeeSetPriority will not be able to continue if you press 'no'.";
+        
+        internal static DialogResult GetDataCorrectionWarning(ActionTypesKSP action)
+        {
+            switch (action)
+            {
+                case ActionTypesKSP.Open:
+                    return MessageBox.Show(KeeSetPriorityTextStrings.OnOpenDataCorrectionWarning, KeeSetPriorityTextStrings.WarningBoxTitleStr, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                case ActionTypesKSP.Save:
+                    return MessageBox.Show(KeeSetPriorityTextStrings.OnSaveDataCorrectionWarning, KeeSetPriorityTextStrings.WarningBoxTitleStr, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                case ActionTypesKSP.Inactive:
+                    return MessageBox.Show(KeeSetPriorityTextStrings.OnInactiveDataCorrectionWarning, KeeSetPriorityTextStrings.WarningBoxTitleStr, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                default:
+                    throw new IndexOutOfRangeException("action not part of supported ActioTypeKSP value.\n\naction = " + action.ToString() + "Function: GetChangePriorityString(ActionTypesKSP action)");
+            }
+        }
+
+        public const string AdvancedOptionsDataCorrectionWarning = "The data to allow advanced options is corrupted or invalid.\n\nDo you want to reset the setting to its default value? KeeSetPriority will not be able to continue if you press 'no'.";
+        public const string AllowDangerousPrioritiesDataCorrectionWarning = "The data to allow dangerous priorities (High, Real time) is corrupted or invalid.\n\nDo you want to reset the setting to its default value? KeeSetPriority will not be able to continue if you press 'no'.";
+        public const string PriorityBoostDataCorrectionWarning = "The data to set priority boost is corrupted or invalid.\n\nDo you want to reset the setting to its default value? KeeSetPriority will not be able to continue if you press 'no'.";
+        public const string UpdateThreadSettingsCorrectionWarning = "The configuration data for the update thread is corrupted or invalid.\n\nDo you want to reset the setting to its default value? KeeSetPriority will not be able to continue if you press 'no'.";
+
         public static string HighPriorityWarningMessageStr(ProcessPriorityClassKSP prio, ActionTypesKSP action)
         {
             string str = "You are about to set the priority to " + GetPriorityLevelStr(prio) + ".\n\nThis could cause the computer to stop responding or lock up ";
@@ -69,14 +95,39 @@ namespace KeeSetPriority
         public const string ErrorPriorityBoostRWStr = "Error reading and writing priority boost state from process. This may indicate problems with the application or the OS.\n\nFull exception:\n";
 
         public const string AdvancedSettingsBoxStr = "You are about to turn advanced settings on.\n\nKeep in mind these settings can cause undesired side effects and may cause data loss or corruption.\n\nAre you sure you want to continue?";
-
+        public const string LegacySettingsBoxStr = "Settings saved are from a previous version of KeeSetPriority.\n\nDo you want to upgrade them to the new format? Previous values will not be readable by previous versions of KeeSetPriority.";
+        
         #region Configuration strings, do not change
-        public const string changePriorityOnOpenString = "KeeSetPriority.priorityLevelOnOpen";
-        public const string changePriorityOnSaveString = "KeeSetPriority.priorityLevelOnSave";
-        public const string changePriorityOnInactiveString = "KeeSetPriority.priorityLevelOnInactive";
-        public const string changePriorityBoostString = "KeeSetPriority.changePriorityOnInactive";
+        private const string changePriorityOnOpenString = "KeeSetPriority.priorityLevelOnOpen";
+        private const string changePriorityOnSaveString = "KeeSetPriority.priorityLevelOnSave";
+        private const string changePriorityOnInactiveString = "KeeSetPriority.priorityLevelOnInactive";
+        internal static string GetChangePriorityString(ActionTypesKSP action)
+        {
+            switch (action)
+            {
+                case ActionTypesKSP.Open:
+                    return changePriorityOnOpenString;
+                case ActionTypesKSP.Save:
+                    return changePriorityOnSaveString;
+                case ActionTypesKSP.Inactive:
+                    return changePriorityOnInactiveString;
+                default:
+                    throw new IndexOutOfRangeException("action not part of supported ActioTypeKSP value.\n\naction = " + action.ToString() + "Function: GetChangePriorityString(ActionTypesKSP action)");
+            }
+        }
+
+        public const string allowBackgroundSystemProcessesString = "KeeSetPriority.allowBackgroundProcesses";
+        public const string changePriorityBoostString = "KeeSetPriority.priorityBoost";
         public const string isAdvancedOptionsAvailableString = "KeeSetPriority.isAdvancedOptionsAvailable";
         public const string allowDangerousPrioritiesString = "KeeSetPriority.allowDangerousPriorities";
+        public const string updateThreadSettingsString = "KeeSetPriority.updateThreadSettings";
+        // These are legacy configuration strings
+        public const string changePriorityOnOpenStringLegacy_v08 = "KeeSetPriority.changePriorityOnOpen";
+        public const string changePriorityOnOpenStringLegacy_v05 = "changePriorityOnOpen";
+        public const string changePriorityOnSaveStringLegacy_v08 = "KeeSetPriority.changePriorityOnSave";
+        public const string changePriorityOnSaveStringLegacy_v05 = "changePriorityOnSave";
+        public const string changePriorityOnInactiveStringLegacy_v08 = "KeeSetPriority.changePriorityOnInactive";
+        public const string changePriorityOnInactiveStringLegacy_v05 = "changePriorityOnInactive";
         #endregion
     }
 }
