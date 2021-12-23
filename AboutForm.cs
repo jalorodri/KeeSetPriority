@@ -15,5 +15,10 @@ namespace KeeSetPriority
         {
             InitializeComponent();
         }
+
+        public void RichTextBox1_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.LinkText);
+        }
     }
 }
