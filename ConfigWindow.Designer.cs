@@ -619,7 +619,7 @@ namespace KeeSetPriority
             // 
             // currentPriorityGroupBox
             // 
-            this.currentPriorityGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.currentPriorityGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.currentPriorityGroupBox.Controls.Add(this.currentPriorityLabel);
             this.currentPriorityGroupBox.Location = new System.Drawing.Point(200, 439);
             this.currentPriorityGroupBox.Name = "currentPriorityGroupBox";
