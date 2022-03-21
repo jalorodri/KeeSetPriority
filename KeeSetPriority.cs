@@ -89,13 +89,10 @@ namespace KeeSetPriority
                 {
                     if (settingsWindow.ShowDialog() == DialogResult.OK)
                     {
-                        // If the user wants to save the settings, the new main class is the one from settingsWindow and the old mainDataClass is discarted
-                        mainDataClass = settingsWindow.configWindowDataClass;
+                        // If the user wants to save the settings, the new main class is clones from the one from settingsWindow and the old mainDataClass is discarted
+                        mainDataClass = (KeeSetPriorityData)settingsWindow.configWindowDataClass.Clone();
                     }
-                    else
-                    {
-                        KeeSetPriorityData.UpdateThreadDataClass = mainDataClass;
-                    }
+                    KeeSetPriorityData.UpdateThreadDataClass = mainDataClass;
                 }
             };
             return MainButtonToolsPanel;

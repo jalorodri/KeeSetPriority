@@ -57,7 +57,15 @@ namespace KeeSetPriority
             actionType = action;
 
             InitializeComponent();
+
+            // Only the most current processPicker instances should be on the list; if there are already 3, the list is stale
+            // and needs to be cleared and updated
+            if (processPickerList.Count >= 3)
+            {
+                processPickerList.Clear();
+            }
             processPickerList.Add(this);
+            
             availableProcessesBox.Items.Add("Loading...");
             UpdateAvailableProcessesBoxes();
 
@@ -68,11 +76,6 @@ namespace KeeSetPriority
                 selectedProcessesStr.Sort();
                 selectedProcessesBox.Items.AddRange(selectedProcessesStr.ToArray());
             }
-        }
-
-        ~ProcessPicker()
-        {
-            processPickerList.Remove(this);
         }
 
         static ProcessPicker()

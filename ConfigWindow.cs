@@ -588,37 +588,7 @@ namespace KeeSetPriority
         #endregion
 
         #region Advanced tab functions
-
-        // When the priority boost dropdown index is changed
-        private void SetPriorityBoostDropdown_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (setPriorityBoostDropdown.SelectedIndex == 0) // Enabled
-            {
-                configWindowDataClass.configDataStruct.priorityBoostState = PriorityBoostTypesKSP.Enabled;
-            }
-            else if (setPriorityBoostDropdown.SelectedIndex == 1) //disabled
-            {
-                configWindowDataClass.configDataStruct.priorityBoostState = PriorityBoostTypesKSP.Disabled;
-            }
-            KeeSetPriorityData.currentProcess.PriorityBoostEnabled = configWindowDataClass.configDataStruct.priorityBoostState == PriorityBoostTypesKSP.Enabled;
-            KeeSetPriorityData.currentProcess.Refresh();
-            priorityBoostStatusLabel.Text = KeeSetPriorityData.currentProcess.PriorityBoostEnabled ? KeeSetPriorityTextStrings.EnabledStr : KeeSetPriorityTextStrings.DisabledStr;
-        }
-
-        // When the priority boost check is changed
-        private void SetPriorityBoostButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (initializationDone)
-            {
-                setPriorityBoostDropdown.SelectedIndex = -1; // Unset or make sure it is in a default state
-                configWindowDataClass.configDataStruct.priorityBoostState = PriorityBoostTypesKSP.Default;
-                setPriorityBoostDropdown.Enabled = setPriorityBoostButton.Checked;
-                KeeSetPriorityData.currentProcess.PriorityBoostEnabled = KeeSetPriorityData.defaultPriorityBoost == PriorityBoostTypesKSP.Enabled;
-                KeeSetPriorityData.currentProcess.Refresh();
-                priorityBoostStatusLabel.Text = KeeSetPriorityData.currentProcess.PriorityBoostEnabled ? KeeSetPriorityTextStrings.EnabledStr : KeeSetPriorityTextStrings.DisabledStr;
-            }
-        }
-
+        // Main button
         private void DialogEnableAdvancedSettings_CheckedChanged(object sender, EventArgs e)
         {
             if (initializationDone)
@@ -640,17 +610,45 @@ namespace KeeSetPriority
                 else
                 {
                     advancedGroupBox.Enabled = false;
+                    allowNonWindowedProcessesCheckbox.Checked = false;
                     allowRealtimePriorityButton.Checked = false;
                     allowHighPriorityButton.Checked = false;
                     setPriorityBoostButton.Checked = false;
                     setPriorityBoostDropdown.SelectedIndex = -1;
                     configWindowDataClass.configDataStruct.isAdvancedOptionsAvailable = false;
-                    configWindowDataClass.configDataStruct.allowDangerousPrioritites = AllowDangerousPrioritites.No;
-                    configWindowDataClass.configDataStruct.priorityBoostState = PriorityBoostTypesKSP.Default;
                 }
             }
         }
 
+        // Priority boost
+        private void SetPriorityBoostButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializationDone)
+            {
+                setPriorityBoostDropdown.SelectedIndex = -1; // Unset or make sure it is in a default state
+                configWindowDataClass.configDataStruct.priorityBoostState = PriorityBoostTypesKSP.Default;
+                setPriorityBoostDropdown.Enabled = setPriorityBoostButton.Checked;
+                KeeSetPriorityData.currentProcess.PriorityBoostEnabled = KeeSetPriorityData.defaultPriorityBoost == PriorityBoostTypesKSP.Enabled;
+                KeeSetPriorityData.currentProcess.Refresh();
+                priorityBoostStatusLabel.Text = KeeSetPriorityData.currentProcess.PriorityBoostEnabled ? KeeSetPriorityTextStrings.EnabledStr : KeeSetPriorityTextStrings.DisabledStr;
+            }
+        }
+        private void SetPriorityBoostDropdown_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (setPriorityBoostDropdown.SelectedIndex == 0) // Enabled
+            {
+                configWindowDataClass.configDataStruct.priorityBoostState = PriorityBoostTypesKSP.Enabled;
+            }
+            else if (setPriorityBoostDropdown.SelectedIndex == 1) //disabled
+            {
+                configWindowDataClass.configDataStruct.priorityBoostState = PriorityBoostTypesKSP.Disabled;
+            }
+            KeeSetPriorityData.currentProcess.PriorityBoostEnabled = configWindowDataClass.configDataStruct.priorityBoostState == PriorityBoostTypesKSP.Enabled;
+            KeeSetPriorityData.currentProcess.Refresh();
+            priorityBoostStatusLabel.Text = KeeSetPriorityData.currentProcess.PriorityBoostEnabled ? KeeSetPriorityTextStrings.EnabledStr : KeeSetPriorityTextStrings.DisabledStr;
+        }
+
+        // High priorities
         private void AllowRealtimePriorityButton_CheckedChanged(object sender, EventArgs e)
         {
             if (initializationDone)
@@ -687,7 +685,6 @@ namespace KeeSetPriority
                 SetPriorityDropdownsOnStartup(ActionTypesKSP.Inactive);
             }
         }
-
         private void AllowHighPriorityButton_CheckedChanged(object sender, EventArgs e)
         {
             if (initializationDone)
@@ -715,6 +712,17 @@ namespace KeeSetPriority
             }
         }
 
+        // Other processes
+        private void AllowNonWindowedProcessesCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializationDone)
+            {
+                allowSystemProcessesCheckBox.Enabled = allowNonWindowedProcessesCheckbox.Checked;
+                allowSystemProcessesCheckBox.Checked = false;
+                configWindowDataClass.configDataStruct.allowNonWindowedProcesses = allowNonWindowedProcessesCheckbox.Checked ? AllowBackgroundSystemProcesses.OnlyBackground : AllowBackgroundSystemProcesses.No;
+                ProcessPicker.UpdateProcessList(); // One call updates all the tabs' boxes
+            }
+        }
         private void AllowSystemProcessesCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (initializationDone)
@@ -724,6 +732,7 @@ namespace KeeSetPriority
             }
         }
 
+        // Update interval
         private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             if (initializationDone)
@@ -752,17 +761,6 @@ namespace KeeSetPriority
             using (AboutForm aboutForm = new AboutForm())
             {
                 aboutForm.ShowDialog();
-            }
-        }
-
-        private void AllowNonWindowedProcessesCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (initializationDone)
-            {
-                configWindowDataClass.configDataStruct.allowNonWindowedProcesses = allowNonWindowedProcessesCheckbox.Checked ? AllowBackgroundSystemProcesses.OnlyBackground : AllowBackgroundSystemProcesses.No;
-                allowSystemProcessesCheckBox.Enabled = allowNonWindowedProcessesCheckbox.Checked;
-                allowSystemProcessesCheckBox.Checked = false;
-                ProcessPicker.UpdateProcessList(); // One call updates all the tabs' boxes
             }
         }
 
