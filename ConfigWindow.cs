@@ -614,7 +614,7 @@ namespace KeeSetPriority
                     allowRealtimePriorityButton.Checked = false;
                     allowHighPriorityButton.Checked = false;
                     setPriorityBoostButton.Checked = false;
-                    setPriorityBoostDropdown.SelectedIndex = -1;
+                    updateFrecuencyNumericUpDown.Value = 5; // 5000 milliseconds is the default value
                     configWindowDataClass.configDataStruct.isAdvancedOptionsAvailable = false;
                 }
             }
